@@ -1,20 +1,26 @@
 <!--  微页面  -->
 <template>
 	<div class="wechat-page">
-		<el-form :model="loginForm" :rules="rules" ref="loginForm" label-position="top" label-width="80px" class="login-form">
-			<el-form-item label="学校">
-				<el-select v-model="loginForm.universityId">
-					<el-option v-for="university in universities" :key="university.id" :label="university.name" :value="university.id"></el-option>
-				</el-select>
-			</el-form-item>
-			<el-form-item prop="account" label="工号">
-				<el-input size="large" type="text" v-model="loginForm.account" placeholder="工号"></el-input>
-			</el-form-item>
-			<el-form-item prop="password" label="密码">
-				<el-input size="large" type="password" v-model="loginForm.password" placeholder="密码"></el-input>
-			</el-form-item>
-		</el-form>
-		<button type="">下一步</button>
+		<div v-if="step === 1">
+			<label>学校</label>
+			<select v-model="loginForm.universityId">
+				<option value='' disabled selected style='display:none;'>请选择您当前就读学校</option>
+				<option v-for="universitiy in universities" :value="universitiy.id">{{universitiy.name}}</option>
+			</select>
+			
+			<label>学号</label>
+			<input size="large" type="text" v-model="loginForm.studentId" placeholder="请输入您的学号">
+
+			<label>姓名</label>
+			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
+		</div>
+		<div v-if="step === 2">
+			<label>新密码</label>
+			<input size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
+			<label>再次输入密码</label> 
+			<input size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
+		</div>
+		<button type="" @click="step === 1 ? next() : submit()">{{step === 1 ? '下一步' : '提交'}}</button>
 	</div>
 </template>
 
@@ -31,6 +37,7 @@
 	export default {
 		data() {
 			return {
+				step: 1,
 				universities: [],
 				loginForm: {
 					universityId: '',
@@ -38,14 +45,6 @@
 					name: '',
 					password: '',
 					rePassword: '',
-				},
-				rules: {
-					account: [
-						{ required: true, message: '请输入账号', trigger: 'blur' },
-					],
-					password: [
-						{ required: true, message: '请输入密码', trigger: 'blur' },
-					]
 				},
 			}
 		},
@@ -57,6 +56,13 @@
 				.then(res => {
 					this.universities = res.data.data.universities;
 				});
+			},
+			next() {
+				this.step = 2;
+				console.log('next!', this.loginForm);
+			},
+			submit() {
+				console.log('submit!', this.loginForm);
 			}
 		},
 		mounted: function () {
@@ -73,10 +79,12 @@
 		background: #66a6ff;
 		height: 100%;
 		width: 100%;
-		form {
-			width: 90%;
-		}
 
+		label {
+			display: block;
+			margin: 10px 0;
+			font-size: 16px;
+		}
 		select {
 			width: 90%;
 			color: #fff;
@@ -85,6 +93,7 @@
 			border-bottom: 1px solid #fff;
 			outline: none;
 			background: transparent;
+			margin: 5px;
 		}
 
 		input {
@@ -94,6 +103,7 @@
 			border-bottom: 1px solid #fff;
 			width: 90%;
 			outline: none;
+			margin: 5px;
 		}
 
 		button {
