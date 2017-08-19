@@ -16,5 +16,137 @@
 	</div>
 	<!-- built files will be auto injected -->
 </body>
+<script>
+	// (function (doc, win) {
+	// 	var docEl = doc.documentElement,//根元素html
+	// 		//判断窗口有没有orientationchange这个方法，有就赋值给一个变量，没有就返回resize方法。
+	// 		resizeEvt = 'orientationchange' in window ? 'orientationchange' : 'resize',
+	// 		recalc = function () {
+	// 			var clientWidth = docEl.clientWidth;
+	// 			if (!clientWidth) {
+	// 				return;
+	// 			}
+	// 			//把document的fontSize大小设置成跟窗口成一定比例的大小，从而实现响应式效果。
+	// 			docEl.style.fontSize = 20 * (clientWidth / 320) + 'px';
+	// 		};
+	// 	if (!doc.addEventListener) {
+	// 		return;
+	// 	}
+	// 	win.addEventListener(resizeEvt, recalc, false);//addEventListener事件方法接受三个参数：第一个是事件名称比如点击事件onclick，第二个是要执行的函数，第三个是布尔值
+	// 	doc.addEventListener('DOMContentLoaded', recalc, false)//绑定浏览器缩放与加载时间
+	// })(document, window);
+
+	(function () {
+		var str = window.location.href;
+		// 设置全局变量，接口主机名和重定向函数
+		window.authUrl = 'http://120.77.72.16:8080/';
+		window.redirect = redirect;
+
+		if (str.match("=&from=singlemessage") != null) {
+			str = str.replace(/\?.*#/, "\?#");
+			window.location.href = str;
+			window.location.assign(str);
+		} else {
+			// 判断url有没有带openid和token，有的话存cookies并重新跳转，把参数去掉
+			console.debug('openid:' + getQueryString('openid'), 'token: ' + getQueryString('token'));
+			if (getQueryString('openid') && getQueryString('token')) {
+				console.debug('has openid and token')
+				if (getQueryString('openid') != null) {
+					setCookie('openid', getQueryString('openid'), 2);
+				}
+
+				if (getQueryString('token') != null) {
+					setCookie('token', getQueryString('token'), 2);
+				}
+
+				if (getQueryString('underwriterID') != null) {
+					setCookie('underwriterID', getQueryString('underwriterID'), 2);
+				}
+
+				window.location.replace(removeUrlParams(['token', 'openid', 'underwriterID']));
+			} else {
+				console.debug('has no token or openid')
+				// 查看cookies里查看一下是否有token和openid,有的话直接往下走，没有的话去后台获取
+				var openID = getCookie('openid');
+				var token = getCookie('token');
+				if (openID && token && openID != "undefined") {
+					console.debug('has cookie', window.location.href, window.location.href.indexOf('?'));
+					if (window.location.href.indexOf('?') == -1) {
+						window.location.replace(window.location.href.split('#')[0] + '?#' + (window.location.href.split('#')[1] || ''));
+					} else {
+						window.wechatAuthToken = getCookie('token');
+					}
+				} else {
+					redirect();
+				}
+			}
+		}
+
+		// 去除url中的参数
+		function removeUrlParams(params) {
+			var url = window.location.href;
+			for (var i in params) {
+				var reg = new RegExp("(^|&)" + params[i] + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) url = url.replace(params[i] + '=' + r[2], '').replace('&&', '&');
+			}
+			return url.replace('?&', '?').replace('&#', '#');
+		}
+
+		// 跳转到后端授权接口
+		function redirect() {
+			var page = '';
+			if (location.href.indexOf('?') != -1) {
+				page = location.href;
+			} else {
+				if (location.href.indexOf('#') != -1) {
+					page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
+				} else {
+					page = location.href + '?';
+				}
+			}
+			page = encodeURIComponent('&page=' + encodeURIComponent(page));
+			// window.location.href = window.authUrl + 'runningSports?method=wechatAuth&page=' + encodeURIComponent(page);
+			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2c8f990778df47a3&redirect_uri='
+				+ 'http%3A%2F%2F120.77.72.16:8080%2FrunningSports?method=wechatAuth' + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
+		}
+
+		// 设置cookies, hours为过期时间
+		function setCookie(name, value, hours) {
+			var expires = new Date((new Date()).getTime() + hours * 3600000);
+			document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires.toGMTString();
+		}
+
+		// 获取cookies
+		function getCookie(name) {
+			var arr = document.cookie.split('; ');
+			var i = 0;
+			for (i = 0; i < arr.length; i++) {
+				var arr2 = arr[i].split('=');
+				if (arr2[0] == name) {
+					var getC = decodeURIComponent(arr2[1]);
+					return getC;
+				}
+			}
+			return '';
+		}
+
+		// 移除cookies
+		function removeCookie(name) {
+			var exp = new Date();
+			exp.setTime(exp.getTime() - 1);
+			var cval = getCookie(name);
+			if (cval != null) document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+		}
+
+		// 获取url参数
+		function getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return unescape(r[2]);
+			return null;
+		}
+	}());
+</script>
 
 </html>
