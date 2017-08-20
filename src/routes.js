@@ -1,5 +1,4 @@
 import HomePage from './views/HomePage.vue'
-
 let routes = [
     {
         path: '/home',
@@ -11,11 +10,6 @@ let routes = [
         path: '/',
         redirect: { path: '/home' },
         hidden: true
-    },
-    {
-        path: '*',
-        hidden: true,
-        redirect: { path: '/404' }
     }
 ];
 

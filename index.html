@@ -100,14 +100,14 @@
 				page = location.href;
 			} else {
 				if (location.href.indexOf('#') != -1) {
+					// page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
 					page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
 				} else {
 					page = location.href + '?';
 				}
 			}
-			page = encodeURIComponent('&page=' + encodeURIComponent(page));
-			// window.location.href = window.authUrl + 'runningSports?method=wechatAuth&page=' + encodeURIComponent(page);
-			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx4fce44e3419d7005&redirect_uri='
+			// page = '&page=' + encodeURIComponent(page);
+			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2c8f990778df47a3&redirect_uri='
 				+ 'http%3A%2F%2F120.77.72.16:8080%2FrunningSports?method=wechatAuth' + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
 		}
 
