@@ -9,10 +9,11 @@
 			</select>
 
 			<label>学号</label>
-			<input size="large" type="text" v-model="loginForm.studentId" placeholder="请输入您的学号">
+			<input size="large" type="text" v-model="loginForm.studentNo" placeholder="请输入您的学号">
 
 			<label>姓名</label>
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
+			<p v-if="verifyError" class="error-msg">该姓名与学号不符，请重新输入</p>
 		</div>
 		<div v-if="step === 2" class="page-2">
 			<p>你好，{{loginForm.name}}</p>
@@ -35,6 +36,8 @@
 
 <script>
 	import resources from '../resources'
+	import { Loading, Message } from 'element-ui'
+
 	const universitiesQuery = `
 	{
 		universities {
@@ -43,6 +46,21 @@
 		}
 	}`;
 
+	const studentQuery = `
+	query(
+		$universityId: Long
+		$studentNo: String
+		$name: String
+	){
+		student(
+			universityId: $universityId, 
+			studentNo: $studentNo
+			name: $name
+		){
+			name
+		}
+	}`
+
 	export default {
 		data() {
 			return {
@@ -50,12 +68,13 @@
 				universities: [],
 				loginForm: {
 					universityId: '',
-					studentId: '',
+					studentNo: '',
 					name: '',
 					password: '',
 					rePassword: '',
 				},
-				imageUrl: ''
+				imageUrl: '',
+				verifyError: false, // 学号与姓名验证结果
 			}
 		},
 		methods: {
@@ -63,13 +82,37 @@
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${universitiesQuery}`
 				})
-					.then(res => {
-						this.universities = res.data.data.universities;
-					});
+				.then(res => {
+					this.universities = res.data.data.universities;
+				});
 			},
 			next() {
-				this.step++;
-				console.log('next!', this.loginForm);
+                let _this = this;
+				
+				if (this.step === 1) {
+					if (!this.loginForm.name || !this.loginForm.universityId || !this.loginForm.studentNo) {
+						Message.error({
+							message: '学校／学号／姓名不能为空'
+						})
+						return;
+					}
+					let params = {
+						universityId: this.loginForm.universityId,
+						studentNo: this.loginForm.studentNo, // 测试No：15210231110 name:林金鸿
+						name: this.loginForm.name
+					}
+					this.$ajax.post(`${resources.graphQlApi}`, {
+						'query': `${studentQuery}`,
+						variables: params
+					})
+					.then(res => {
+						if (res.data.data.student) {
+							_this.step++;
+						} else {
+							_this.verifyError = true;
+						}
+					});
+				}
 			},
 			submit() {
 				console.log('submit!', this.loginForm);
@@ -196,6 +239,11 @@
 			width: 178px;
 			height: 178px;
 			display: block;
+		}
+		.error-msg {
+			font-size: 12px;
+			color: #59f4df;
+			margin: 5px;
 		}
 	}
 </style>
