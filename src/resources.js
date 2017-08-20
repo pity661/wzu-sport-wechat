@@ -14,8 +14,8 @@ let resources = {
     host: host,
     // graphQL查询Api
     graphQlApi: `${host}\/graphql`,
-    requestLogin() { 
-        return `${host}/tokens`
+    users(id) { 
+        return `${host}\/users\/${id}`
     }
 };
 

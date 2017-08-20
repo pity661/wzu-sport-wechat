@@ -19,16 +19,17 @@
 			<p>你好，{{loginForm.name}}</p>
 			<el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false" :on-success="handleAvatarSuccess"
 			 :before-upload="beforeAvatarUpload">
-				<img v-if="imageUrl" :src="imageUrl" class="avatar">
+				<img v-if="loginForm.imageUrl" :src="loginForm.imageUrl" class="avatar">
 				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
 			</el-upload>
 			<p>上传个人头像，让你更有魅力</p>
 		</div>
 		<div v-if="step === 3" class="page-3">
 			<label>新密码</label>
-			<input size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
+			<input min="6" max="16" size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
 			<label>再次输入密码</label>
-			<input size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
+			<input min="6" max="16" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
+			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
 		<button type="" @click="step < 3 ? next() : submit()">{{step < 3 ? '下一步' : '提交'}}</button>
 	</div>
@@ -36,6 +37,7 @@
 
 <script>
 	import resources from '../resources'
+	import md5 from 'js-md5'
 	import { Loading, Message } from 'element-ui'
 
 	const universitiesQuery = `
@@ -58,6 +60,7 @@
 			name: $name
 		){
 			name
+			id
 		}
 	}`
 
@@ -72,9 +75,12 @@
 					name: '',
 					password: '',
 					rePassword: '',
+					imageUrl: '',
 				},
-				imageUrl: '',
+				userId: '',
 				verifyError: false, // 学号与姓名验证结果
+				passError: false,
+				passErrorMsg: ''
 			}
 		},
 		methods: {
@@ -98,7 +104,7 @@
 					}
 					let params = {
 						universityId: this.loginForm.universityId,
-						studentNo: this.loginForm.studentNo, // 测试No：15210231110 name:林金鸿
+						studentNo: this.loginForm.studentNo, // 测试No: 15210231110 name: 林金鸿
 						name: this.loginForm.name
 					}
 					this.$ajax.post(`${resources.graphQlApi}`, {
@@ -107,18 +113,48 @@
 					})
 					.then(res => {
 						if (res.data.data.student) {
+							_this.userId = res.data.data.student.id;
 							_this.step++;
 						} else {
 							_this.verifyError = true;
 						}
 					});
+				} else if (this.step === 2) {
+					_this.step++;
 				}
+
 			},
 			submit() {
-				console.log('submit!', this.loginForm);
+				let _this = this;
+				if (this.loginForm.password !== this.loginForm.rePassword) {
+					_this.passError = true;
+					_this.passErrorMsg = '两次密码输入不一致，请重新输入';
+					return
+				}
+
+				if (this.loginForm.password.length < 6 || this.loginForm.password.length > 16){
+					_this.passError = true;
+					_this.passErrorMsg = '密码格式不正确，请重新输入';
+					return;
+				}
+
+				_this.passError = false;
+				let url = resources.users(this.userId);
+				let params = new URLSearchParams();
+				params.append('password', md5(this.loginForm.password));
+				// 真实流程还需要传openid
+				// params.append('openid', 'xxx');
+				
+				this.$ajax.post(url, params)
+				.then(res => {
+					Message.success({
+						message: '成功！'
+					})
+					console.log(res);
+				});
 			},
 			handleAvatarSuccess(res, file) {
-				this.imageUrl = URL.createObjectURL(file.raw);
+				this.loginForm.imageUrl = URL.createObjectURL(file.raw);
 			},
 			beforeAvatarUpload(file) {
 				const isJPG = file.type === 'image/jpeg';
