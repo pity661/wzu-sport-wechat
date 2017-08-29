@@ -96,6 +96,7 @@
 		// 跳转到后端授权接口
 		function redirect() {
 			var page = '';
+			location.pathname = '/home';
 			if (location.href.indexOf('?') != -1) {
 				page = location.href;
 			} else {
