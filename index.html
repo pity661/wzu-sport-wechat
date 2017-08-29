@@ -16,7 +16,7 @@
 	</div>
 	<!-- built files will be auto injected -->
 </body>
-<!-- <script>
+<script>
 	// (function (doc, win) {
 	// 	var docEl = doc.documentElement,//根元素html
 	// 		//判断窗口有没有orientationchange这个方法，有就赋值给一个变量，没有就返回resize方法。
@@ -39,7 +39,7 @@
 	(function () {
 		var str = window.location.href;
 		// 设置全局变量，接口主机名和重定向函数
-		window.authUrl = 'http://120.77.72.16:8080/';
+		window.authUrl = '192.168.0.112:8080';
 		window.redirect = redirect;
 
 		if (str.match("=&from=singlemessage") != null) {
@@ -106,9 +106,13 @@
 					page = location.href + '?';
 				}
 			}
-			// page = '&page=' + encodeURIComponent(page);
-			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2c8f990778df47a3&redirect_uri='
-				+ 'http%3A%2F%2F120.77.72.16:8080%2FrunningSports?method=wechatAuth' + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
+
+			var redirectUri = "http://192.168.1.108:8080/api/users/wechatAuth";
+			redirectUri = encodeURIComponent(redirectUri);
+			page = "?page=" + encodeURIComponent(page);
+			// page = encodeURIComponent('&page=' + encodeURIComponent(page));
+			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7d248efdb1dc6821&redirect_uri='
+				+  redirectUri + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
 		}
 
 		// 设置cookies, hours为过期时间
@@ -147,6 +151,6 @@
 			return null;
 		}
 	}());
-</script> -->
+</script>
 
 </html>
