@@ -15,23 +15,23 @@
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
 			<p v-if="verifyError" class="error-msg">该姓名与学号不符，请重新输入</p>
 		</div>
-		<div v-if="step === 2" class="page-2">
+		<!-- <div v-if="step === 2" class="page-2">
 			<p>你好，{{loginForm.name}}</p>
-			<el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false" :on-success="handleAvatarSuccess"
-			 :before-upload="beforeAvatarUpload">
-				<img v-if="loginForm.imageUrl" :src="loginForm.imageUrl" class="avatar">
-				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-			</el-upload>
+			<form>
+				<input type="text" value="" v-model="userId" style="visibility:hidden">
+				<input class="avatar-uploader" type="file" @change="getFile($event)">
+				<button @click="submitForm($event)">下一步</button>
+			</form>
 			<p>上传个人头像，让你更有魅力</p>
-		</div>
-		<div v-if="step === 3" class="page-3">
+		</div> -->
+		<div v-if="step === 2" class="page-3">
 			<label>新密码</label>
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
 			<label>再次输入密码</label>
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
 			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
-		<button type="" @click="step < 3 ? next() : submit()">{{step < 3 ? '下一步' : '提交'}}</button>
+		<button  @click="step == 1 ? next() : submit()">{{step == 1 ? '下一步' : '提交'}}</button>
 	</div>
 </template>
 
@@ -68,14 +68,16 @@
 		data() {
 			return {
 				step: 1,
+				openid: this.$route.params.openid,
 				universities: [],
 				loginForm: {
-					universityId: '',
-					studentNo: '',
-					name: '',
+					// 测试账号: 15210231110 name: 林金鸿
+					universityId: 1,
+					studentNo: '15210231110',
+					name: '林金鸿',
 					password: '',
 					rePassword: '',
-					imageUrl: '',
+					// imageUrl: '',
 				},
 				userId: '',
 				verifyError: false, // 学号与姓名验证结果
@@ -88,13 +90,13 @@
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${universitiesQuery}`
 				})
-				.then(res => {
-					this.universities = res.data.data.universities;
-				});
+					.then(res => {
+						this.universities = res.data.data.universities;
+					});
 			},
 			next() {
-                let _this = this;
-				
+				let _this = this;
+
 				if (this.step === 1) {
 					if (!this.loginForm.name || !this.loginForm.universityId || !this.loginForm.studentNo) {
 						Message.error({
@@ -104,21 +106,21 @@
 					}
 					let params = {
 						universityId: this.loginForm.universityId,
-						studentNo: this.loginForm.studentNo, // 测试No: 15210231110 name: 林金鸿
+						studentNo: this.loginForm.studentNo,
 						name: this.loginForm.name
 					}
 					this.$ajax.post(`${resources.graphQlApi}`, {
 						'query': `${studentQuery}`,
 						variables: params
 					})
-					.then(res => {
-						if (res.data.data.student) {
-							_this.userId = res.data.data.student.id;
-							_this.step++;
-						} else {
-							_this.verifyError = true;
-						}
-					});
+						.then(res => {
+							if (res.data.data.student) {
+								_this.userId = res.data.data.student.id;
+								_this.step++;
+							} else {
+								_this.verifyError = true;
+							}
+						});
 				} else if (this.step === 2) {
 					_this.step++;
 				}
@@ -132,7 +134,7 @@
 					return
 				}
 
-				if (this.loginForm.password.length < 6 || this.loginForm.password.length > 16){
+				if (this.loginForm.password.length < 6 || this.loginForm.password.length > 16) {
 					_this.passError = true;
 					_this.passErrorMsg = '密码格式不正确，请重新输入';
 					return;
@@ -141,33 +143,37 @@
 				_this.passError = false;
 				let url = resources.users(this.userId);
 				let params = new URLSearchParams();
+				params.append('studentNo', this.loginForm.studentNo);
 				params.append('password', md5(this.loginForm.password));
-				// 真实流程还需要传openid
-				// params.append('openid', 'xxx');
-				
-				this.$ajax.post(url, params)
-				.then(res => {
-					Message.success({
-						message: '成功！'
-					})
-					console.log(res);
-				});
-			},
-			handleAvatarSuccess(res, file) {
-				this.loginForm.imageUrl = URL.createObjectURL(file.raw);
-			},
-			beforeAvatarUpload(file) {
-				const isJPG = file.type === 'image/jpeg';
-				const isLt2M = file.size / 1024 / 1024 < 2;
+				params.append('openid', this.openid);
 
-				if (!isJPG) {
-					this.$message.error('上传头像图片只能是 JPG 格式!');
-				}
-				if (!isLt2M) {
-					this.$message.error('上传头像图片大小不能超过 2MB!');
-				}
-				return isJPG && isLt2M;
-			}
+				this.$ajax.post(url, params)
+					.then(res => {
+						Message.success({
+							message: '成功！'
+						})
+					});
+			},
+			// getFile(event) {
+			// 	this.file = event.target.files[0];
+			// 	console.log(this.file);
+			// },
+			// submitForm(event) {
+			// 	event.preventDefault();
+			// 	let formData = new FormData();
+			// 	formData.append('userId', this.userId);
+			// 	formData.append('file', this.file);
+			// 	let config = {
+			// 		headers: {
+			// 			'Content-Type': 'multipart/form-data'
+			// 		}
+			// 	}
+			// 	// 这里对接图片上传接口
+			// 	this.$ajax.post('/upload', formData, config).then(function (res) {
+			// 		// 这里对上传完后跳转到第三页
+			// 		this.step = 3;
+			// 	})
+			// }
 		},
 		mounted: function () {
 			this.getUniversities();
@@ -226,7 +232,7 @@
 			outline: none;
 			margin: 0 auto;
 			margin-top: 10px;
-			display: block;			
+			display: block;
 		}
 
 		::-webkit-input-placeholder {

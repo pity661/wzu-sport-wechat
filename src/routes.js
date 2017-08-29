@@ -8,7 +8,7 @@ let routes = [
     },
     {
         path: '/',
-        redirect: { path: '/home' },
+        redirect: { path: '/index.html' },
         hidden: true
     }
 ];
