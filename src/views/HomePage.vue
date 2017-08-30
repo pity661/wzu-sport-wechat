@@ -15,29 +15,23 @@
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
 			<p v-if="verifyError" class="error-msg">该姓名与学号不符，请重新输入</p>
 		</div>
-		<div v-if="step === 2" class="page-2">
+		<!-- <div v-if="step === 2" class="page-2">
 			<p>你好，{{loginForm.name}}</p>
-			<!-- @柴哥 这里是上传图片的表单，样式等功能实现后我再细调 -->
 			<form>
 				<input type="text" value="" v-model="userId" style="visibility:hidden">
 				<input class="avatar-uploader" type="file" @change="getFile($event)">
 				<button @click="submitForm($event)">下一步</button>
 			</form>
-			<!-- <el-upload class="avatar-uploader" action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false" :on-success="handleAvatarSuccess"
-				:before-upload="beforeAvatarUpload">
-				<img v-if="loginForm.imageUrl" :src="loginForm.imageUrl" class="avatar">
-				<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-			</el-upload> -->
 			<p>上传个人头像，让你更有魅力</p>
-		</div>
-		<div v-if="step === 3" class="page-3">
+		</div> -->
+		<div v-if="step === 2" class="page-3">
 			<label>新密码</label>
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
 			<label>再次输入密码</label>
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
 			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
-		<button v-if="step == 1 || step == 3" type="" @click="step == 1 ? next() : submit()">{{step < 3 ? '下一步' : '提交'}}</button>
+		<button  @click="step == 1 ? next() : submit()">{{step == 1 ? '下一步' : '提交'}}</button>
 	</div>
 </template>
 
@@ -74,6 +68,7 @@
 		data() {
 			return {
 				step: 1,
+				openid: this.$route.params.openid,
 				universities: [],
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
@@ -82,7 +77,7 @@
 					name: '林金鸿',
 					password: '',
 					rePassword: '',
-					imageUrl: '',
+					// imageUrl: '',
 				},
 				userId: '',
 				verifyError: false, // 学号与姓名验证结果
@@ -148,38 +143,37 @@
 				_this.passError = false;
 				let url = resources.users(this.userId);
 				let params = new URLSearchParams();
+				params.append('studentNo', this.loginForm.studentNo);
 				params.append('password', md5(this.loginForm.password));
-				// 真实流程还需要传openid
-				// params.append('openid', 'xxx');
+				params.append('openid', this.openid);
 
 				this.$ajax.post(url, params)
 					.then(res => {
 						Message.success({
 							message: '成功！'
 						})
-						console.log(res);
 					});
 			},
-			getFile(event) {
-				this.file = event.target.files[0];
-				console.log(this.file);
-			},
-			submitForm(event) {
-				event.preventDefault();
-				let formData = new FormData();
-				formData.append('userId', this.userId);
-				formData.append('file', this.file);
-				let config = {
-					headers: {
-						'Content-Type': 'multipart/form-data'
-					}
-				}
-				// @柴哥 这里对接图片上传接口
-				this.$ajax.post('/upload', formData, config).then(function (res) {
-					// 这里对上传完后跳转到第三页
-					this.step = 3;
-				})
-			}
+			// getFile(event) {
+			// 	this.file = event.target.files[0];
+			// 	console.log(this.file);
+			// },
+			// submitForm(event) {
+			// 	event.preventDefault();
+			// 	let formData = new FormData();
+			// 	formData.append('userId', this.userId);
+			// 	formData.append('file', this.file);
+			// 	let config = {
+			// 		headers: {
+			// 			'Content-Type': 'multipart/form-data'
+			// 		}
+			// 	}
+			// 	// 这里对接图片上传接口
+			// 	this.$ajax.post('/upload', formData, config).then(function (res) {
+			// 		// 这里对上传完后跳转到第三页
+			// 		this.step = 3;
+			// 	})
+			// }
 		},
 		mounted: function () {
 			this.getUniversities();
