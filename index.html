@@ -42,43 +42,26 @@
 		window.authUrl = '192.168.0.112:8080';
 		window.redirect = redirect;
 
-		if (str.match("=&from=singlemessage") != null) {
-			str = str.replace(/\?.*#/, "\?#");
-			window.location.href = str;
-			window.location.assign(str);
+		// 判断url有没有带openid，有的话存cookies并重新跳转，把参数去掉
+		console.debug('openid:' + getQueryString('openid'));
+		if (getQueryString('openid')) {
+			console.debug('has openid')
+			setCookie('openid', getQueryString('openid'), 2);
+
+			// window.location.replace(removeUrlParams(['openid']));
+			// window.location.hash = "home";
 		} else {
-			// 判断url有没有带openid和token，有的话存cookies并重新跳转，把参数去掉
-			console.debug('openid:' + getQueryString('openid'), 'token: ' + getQueryString('token'));
-			if (getQueryString('openid') && getQueryString('token')) {
-				console.debug('has openid and token')
-				if (getQueryString('openid') != null) {
-					setCookie('openid', getQueryString('openid'), 2);
+			console.debug('has no openid')
+			// 查看cookies里查看一下是否有openid,有的话直接往下走，没有的话去后台获取
+			var openid = getCookie('openid');
+			if (openid && openid != "undefined") {
+				console.debug('has cookie', window.location.href, window.location.href.indexOf('?'));
+				if (window.location.href.indexOf('?') == -1) {
+					window.location.replace(window.location.href.split('#')[0] + '?#' + (window.location.href.split('#')[1] || ''));
 				}
-
-				if (getQueryString('token') != null) {
-					setCookie('token', getQueryString('token'), 2);
-				}
-
-				if (getQueryString('underwriterID') != null) {
-					setCookie('underwriterID', getQueryString('underwriterID'), 2);
-				}
-
-				window.location.replace(removeUrlParams(['token', 'openid', 'underwriterID']));
+				window.location.hash = "home";
 			} else {
-				console.debug('has no token or openid')
-				// 查看cookies里查看一下是否有token和openid,有的话直接往下走，没有的话去后台获取
-				var openID = getCookie('openid');
-				var token = getCookie('token');
-				if (openID && token && openID != "undefined") {
-					console.debug('has cookie', window.location.href, window.location.href.indexOf('?'));
-					if (window.location.href.indexOf('?') == -1) {
-						window.location.replace(window.location.href.split('#')[0] + '?#' + (window.location.href.split('#')[1] || ''));
-					} else {
-						window.wechatAuthToken = getCookie('token');
-					}
-				} else {
-					redirect();
-				}
+				redirect();
 			}
 		}
 
@@ -95,23 +78,32 @@
 
 		// 跳转到后端授权接口
 		function redirect() {
-			var page = '';
-			if (location.href.indexOf('?') != -1) {
-				page = location.href;
-			} else {
-				if (location.href.indexOf('#') != -1) {
-					// page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
-					page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
-				} else {
-					page = location.href + '?';
-				}
-			}
+			// var page = '';
+			// if (location.href.indexOf('?') != -1) {
+			// 	page = location.href;
+			// } else {
+			// 	if (location.href.indexOf('#') != -1) {
+			// 		// page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
+			// 		page = location.href.split('#')[0] + '?#' + (location.href.split('#')[1] || '');
+			// 	} else {
+			// 		page = location.href + '/home';
+			// 	}
+			// }
 
-			var redirectUri = "http://192.168.1.108:8080/api/users/wechatAuth";
+			//移除index.htom
+			// var oldLocation = location;
+			// oldLocation.hash = '/home';
+			var hash = location.hash;
+			var page = location.href;
+			page = page.replace(hash, '#/home');
+
+			var redirectUri = "http://sport.o-xugroup.com/api/users/wechatAuth";
 			redirectUri = encodeURIComponent(redirectUri);
 			page = "?page=" + encodeURIComponent(page);
-			// page = encodeURIComponent('&page=' + encodeURIComponent(page));
-			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7d248efdb1dc6821&redirect_uri='
+			page = encodeURIComponent(page);
+			// var appId = "wx7d248efdb1dc6821";//测试账号
+			// var appId = "wx2c8f990778df47a3";//欧旭的账号
+			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx2c8f990778df47a3&redirect_uri='
 				+  redirectUri + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
 		}
 
