@@ -15,15 +15,6 @@
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
 			<p v-if="verifyError" class="error-msg">该姓名与学号不符，请重新输入</p>
 		</div>
-		<!-- <div v-if="step === 2" class="page-2">
-			<p>你好，{{loginForm.name}}</p>
-			<form>
-				<input type="text" value="" v-model="userId" style="visibility:hidden">
-				<input class="avatar-uploader" type="file" @change="getFile($event)">
-				<button @click="submitForm($event)">下一步</button>
-			</form>
-			<p>上传个人头像，让你更有魅力</p>
-		</div> -->
 		<div v-if="step === 2" class="page-3">
 			<label>新密码</label>
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
@@ -61,6 +52,7 @@
 		){
 			name
 			id
+			userId
 		}
 	}`
 
@@ -68,7 +60,7 @@
 		data() {
 			return {
 				step: 1,
-				openid: this.$route.params.openid,
+				openid: '',
 				universities: [],
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
@@ -77,7 +69,6 @@
 					name: '林金鸿',
 					password: '',
 					rePassword: '',
-					// imageUrl: '',
 				},
 				userId: '',
 				verifyError: false, // 学号与姓名验证结果
@@ -97,33 +88,40 @@
 			next() {
 				let _this = this;
 
-				if (this.step === 1) {
-					if (!this.loginForm.name || !this.loginForm.universityId || !this.loginForm.studentNo) {
-						Message.error({
-							message: '学校／学号／姓名不能为空'
-						})
-						return;
-					}
-					let params = {
-						universityId: this.loginForm.universityId,
-						studentNo: this.loginForm.studentNo,
-						name: this.loginForm.name
-					}
-					this.$ajax.post(`${resources.graphQlApi}`, {
-						'query': `${studentQuery}`,
-						variables: params
+				if (!this.loginForm.name || !this.loginForm.universityId || !this.loginForm.studentNo) {
+					Message.error({
+						message: '学校／学号／姓名不能为空'
 					})
-						.then(res => {
-							if (res.data.data.student) {
-								_this.userId = res.data.data.student.id;
-								_this.step++;
-							} else {
-								_this.verifyError = true;
-							}
-						});
-				} else if (this.step === 2) {
-					_this.step++;
+					return;
 				}
+
+				let params = {
+					universityId: this.loginForm.universityId,
+					studentNo: this.loginForm.studentNo,
+					name: this.loginForm.name
+				}
+				this.$ajax.post(`${resources.graphQlApi}`, {
+					'query': `${studentQuery}`,
+					variables: params
+				})
+				.then(res => {
+					if (res.data.data.student) {
+						_this.userId = res.data.data.student.id;
+						// 调用一次user更新接口，更新userid
+						let updateUrl = resources.users(this.userId);
+						let updateParams = new URLSearchParams();
+						updateParams.append('userId', _this.userId);
+						updateParams.append('openid', this.openid);
+						_this.$ajax.post(updateUrl, updateParams)
+						.then(res => {console.log('更新openid')});
+
+						_this.step++;
+					} else {
+						_this.verifyError = true;
+					}
+
+
+				});
 
 			},
 			submit() {
@@ -154,29 +152,17 @@
 						})
 					});
 			},
-			// getFile(event) {
-			// 	this.file = event.target.files[0];
-			// 	console.log(this.file);
-			// },
-			// submitForm(event) {
-			// 	event.preventDefault();
-			// 	let formData = new FormData();
-			// 	formData.append('userId', this.userId);
-			// 	formData.append('file', this.file);
-			// 	let config = {
-			// 		headers: {
-			// 			'Content-Type': 'multipart/form-data'
-			// 		}
-			// 	}
-			// 	// 这里对接图片上传接口
-			// 	this.$ajax.post('/upload', formData, config).then(function (res) {
-			// 		// 这里对上传完后跳转到第三页
-			// 		this.step = 3;
-			// 	})
-			// }
 		},
 		mounted: function () {
 			this.getUniversities();
+			this.openid = getQueryString('openid');
+			// 获取url参数
+			function getQueryString(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) return unescape(r[2]);
+				return null;
+			}
 		}
 	}
 
