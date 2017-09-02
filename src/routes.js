@@ -1,8 +1,17 @@
 import HomePage from './views/HomePage.vue'
+import HelpCenterPage from './views/HelpCenterPage.vue'
+
+
 let routes = [
     {
         path: '/home',
         component: HomePage,
+        name: '',
+        hidden: true
+    },
+    {
+        path: '/help',
+        component: HelpCenterPage,
         name: '',
         hidden: true
     },
