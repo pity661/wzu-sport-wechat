@@ -3,21 +3,15 @@ import Vue from 'vue'
 import App from './App'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
-import VueRouter from 'vue-router'
-import routes from './routes'
+import router from './router'
 import resources from './resources'
 import axios from 'axios'
 
 import 'font-awesome/css/font-awesome.min.css'
 
 Vue.use(ElementUI)
-Vue.use(VueRouter)
 
 Vue.prototype.$ajax = axios;
-
-const router = new VueRouter({
-	routes
-})
 
 new Vue({
 	router,
