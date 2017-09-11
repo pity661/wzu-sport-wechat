@@ -5,7 +5,7 @@ if (debug) {
     //   var host = 'http://192.168.1.107:8080/api';
 } else {
     //正式环境地址
-    var host = 'http://120.77.72.16:8080/api';
+    var host = 'https://api.guangyangyundong.com/api';
 }
 console.warn('当前resource: ', host);
 
@@ -14,7 +14,7 @@ let resources = {
     host: host,
     // graphQL查询Api
     graphQlApi: `${host}\/graphql`,
-    users(id) { 
+    users(id) {
         return `${host}\/users\/${id}`
     }
 };

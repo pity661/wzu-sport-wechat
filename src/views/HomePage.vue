@@ -23,7 +23,7 @@
 			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
 		<button  @click="step == 1 ? next() : submit()">{{step == 1 ? '下一步' : '提交'}}</button>
-		<a href="#/help">帮助中心</a>
+		<!--<a href="#/help">帮助中心</a>-->
 	</div>
 </template>
 
@@ -47,7 +47,7 @@
 		$name: String
 	){
 		student(
-			universityId: $universityId, 
+			universityId: $universityId,
 			studentNo: $studentNo
 			name: $name
 		){
