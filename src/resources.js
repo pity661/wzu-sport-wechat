@@ -1,7 +1,8 @@
 const debug = process.env.NODE_ENV === 'development' ? true : false;
 // 测试环境地址
 if (debug) {
-    var host = 'http://120.77.72.16:8080/api';
+    var host = 'https://api.guangyangyundong.com/api';
+    // var host = 'http://120.77.72.16:8080/api';
     //   var host = 'http://192.168.1.107:8080/api';
 } else {
     //正式环境地址

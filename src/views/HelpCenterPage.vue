@@ -107,47 +107,6 @@
                             <p><img src="static/sanxing.jpg" alt="" width="100%"></p>
                         </el-collapse-item>
                     </el-collapse>
-
-                    <!-- <strong>- iphone 手机设置方法</strong>
-                    <p class="content-indent">请打开「设置」-「通用」-「允许后台程序刷新」，看此项是否已经打开。若打开，请检查 光氧运动App 那一项是否打开。若未打开手机系统会自动关闭后台运行的进程。</p>
-                    <p><img src="static/iphone.jpg" alt="" width="100%"></p>
-                    <strong>- OPPO 手机设置方法</strong>
-                    <p>OPPO R9：</p>
-                    <p>打开「设置」-「省电池」，确保 光氧运动App 的「后台冻结」和「检测到异常时自动优化」为关闭状态。</p>
-                    <p><img src="static/oppoR9.jpg" alt="" width="100%"></p>
-                    <p>OPPO R7: 打开「安全中心」-「电量节省」-「纯净后台名单设置」，确保 光氧运动App 的开关处理打开状态。</p>
-                    <p><img src="static/oppoR7.jpg" alt="" width="100%"></p>
-                    <p><img src="static/oppoR7-2.jpg" alt="" width="100%"></p>
-                    <strong>- Vivo 手机设置方法</strong>
-                    <p>打开「i 管家」-「省电管理」，确保处理「正常模式」；打开「后台高耗电」，确保光氧运动App 处于打开状态。</p>
-                    <p><img src="static/vivo.jpg" alt="" width="100%"></p> 
-                    <strong>- 华为手机设置方法</strong>
-                    <p>打开「设置」-「省电管理」-「耗电详情」-「锁屏后继续运行」，确保光氧运动App 处于打开状态。</p>
-                    <p><img src="static/huawei.jpg" alt="" width="100%"></p>
-                    <strong>- 小米手机设置方法</strong>
-                    <p>MIUI 8.0，解除省电限制：打开「设置」-「电量和性能」-「省电优化」，在「应用智能省电」中，将光氧运动App 设置成「无限制」和「允许定位」。</p>
-                    <p><img src="static/xiaomi1.jpg" alt="" width="100%"></p>
-                    <p><img src="static/xiaomi2.jpg" alt="" width="100%"></p>
-                    <p>MIUI 8.0，加入内存清理白名单：点击手机上的物理「菜单」按钮，将光氧运动App向下拉动至露出锁图案后松开，图标右上方出现橙色锁，即添加白名单成功。</p>
-                    <p><img src="static/xiaomi3.jpg" alt="" width="100%"></p>
-                    <p>MIUI 7.0：</p>
-                    <p>1.打开「安全中心」-「电量」-「省电模式」，设置成「我的模式」 （如果没有显示「我的模式」选项，则需要先点击「智能省电模式」，才会出现「我的模式」选项）</p>
-                    <p><img src="static/xiaomi4.jpg" alt="" width="100%"></p>
-                    <p>2.打开「设置」-「其他高级设置」-「神隐模式」，设置为关闭状态</p>
-                    <p><img src="static/xiaomi5.jpg" alt="" width="100%"></p>
-                    <p>若「神隐模式」为标准状态，则在「已安装应用」中，将 光氧运动App 设置成「无限制」和「允许定位」
-                    </p>
-                    <p><img src="static/xiaomi6.jpg" alt="" width="100%"></p>
-                    <strong>- 魅族手机设置方法</strong>
-                    <p>打开「设置」-「电量管理」-「省电优化」，在保持运行的耗电应用中，确保 光氧运动App 为打开状态</p>
-                    <p><img src="static/meizu.jpg" alt="" width="100%"></p>
-                    <p><img src="static/meizu2.jpg" alt="" width="100%"></p>
-                    <strong>- 乐视手机设置方法</strong>
-                    <p>打开「管家」-「省电管理」-「应用保护」，将 光氧运动App 开关置为打开状态。</p>
-                    <p><img src="static/leshi.jpg" alt="" width="100%"></p>
-                    <strong>- 三星手机设置方法</strong>
-                    <p>打开「设置」-「电池」-「省电模式」，确保为关闭状态。</p>
-                    <p><img src="static/sanxing.jpg" alt="" width="100%"></p>-->
                 </div>
             </el-collapse-item>
             <el-collapse-item title="被中断的运动记录，如何找回" name="9">
@@ -355,7 +314,7 @@
     export default {
         data() {
             return {
-                activeNames: ['19'],
+                activeNames: [],
                 activeNames2: []
             };
         },
