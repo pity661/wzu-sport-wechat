@@ -100,7 +100,6 @@
 					studentNo: this.loginForm.studentNo,
 					name: this.loginForm.name
 				}
-				alert(JSON.stringify(params));
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${studentQuery}`,
 					variables: params
