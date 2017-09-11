@@ -347,6 +347,7 @@
             display: inline-block;
             background-color: #66A6FF;
             margin-right: 10px;
+            vertical-align: middle;
         }
         .content {
             max-height: 550px;
