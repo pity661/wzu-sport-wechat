@@ -22,8 +22,7 @@
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
 			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
-		<button  @click="step == 1 ? next() : submit()">{{step == 1 ? '下一步' : '提交'}}</button>
-		<!--<a href="#/help">帮助中心</a>-->
+		<button @click="step == 1 ? next() : submit()">{{step == 1 ? '下一步' : '提交'}}</button>
 	</div>
 </template>
 
@@ -66,8 +65,8 @@
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
 					universityId: 1,
-					studentNo: '15210231110',
-					name: '林金鸿',
+					studentNo: '',
+					name: '',
 					password: '',
 					rePassword: '',
 				},
@@ -106,31 +105,28 @@
 					'query': `${studentQuery}`,
 					variables: params
 				})
-				.then(res => {
-					
-					if (res.data.data.student) {
-						alert(JSON.stringify(res.data.data));
-						_this.userId = res.data.data.student.userId;
-						// 调用一次user更新接口，更新userid
-						let updateUrl = resources.users(_this.userId);
-						let updateParams = new URLSearchParams();
-						updateParams.append('userId', _this.userId);
-						updateParams.append('openid', _this.openid);
-						alert(_this.userId);
-						console.log('userId:', _this.userId)
-						alert(_this.openid);
-						console.log('openid:', _this.openid)
-						_this.$ajax.post(updateUrl, updateParams)
-						.then(res => {alert('成功更新openid')});
+					.then(res => {
 
-						_this.step++;
-					} else {
-						alert('verifyError:', JSON.stringify(res));
-						_this.verifyError = true;
-					}
+						if (res.data.data.student) {
+							try {
+								_this.userId = res.data.data.student.userId;
+								// 调用一次user更新接口，更新userid
+								let updateUrl = resources.users(_this.userId);
+								let updateParams = new URLSearchParams();
+								updateParams.append('userId', _this.userId);
+								updateParams.append('openid', _this.openid);
+								_this.$ajax.post(updateUrl, updateParams)
+									.then(res => { console.log('成功更新openid') });
+								_this.step++;
+							} catch (e) {
+								console.log(e)
+							}
+						} else {
+							_this.verifyError = true;
+						}
 
 
-				});
+					});
 
 			},
 			submit() {
