@@ -164,13 +164,27 @@
 		},
 		mounted: function () {
 			this.getUniversities();
-			this.openid = getQueryString('openid');
+			this.openid = getQueryString('openid') || getCookie('openid');
 			// 获取url参数
 			function getQueryString(name) {
 				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
 				var r = window.location.search.substr(1).match(reg);
 				if (r != null) return unescape(r[2]);
 				return null;
+			}
+
+			// 获取cookies
+			function getCookie(name) {
+				var arr = document.cookie.split('; ');
+				var i = 0;
+				for (i = 0; i < arr.length; i++) {
+					var arr2 = arr[i].split('=');
+					if (arr2[0] == name) {
+						var getC = decodeURIComponent(arr2[1]);
+						return getC;
+					}
+				}
+				return '';
 			}
 		}
 	}
