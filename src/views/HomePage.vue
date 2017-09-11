@@ -65,8 +65,8 @@
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
 					universityId: 1,
-					studentNo: '',
-					name: '',
+					studentNo: '15210231110',
+					name: '林金鸿',
 					password: '',
 					rePassword: '',
 				},
@@ -111,12 +111,20 @@
 								_this.userId = res.data.data.student.userId;
 								// 调用一次user更新接口，更新userid
 								let updateUrl = resources.users(_this.userId);
-								let updateParams = new URLSearchParams();
-								updateParams.append('userId', _this.userId);
-								updateParams.append('openid', _this.openid);
-								_this.$ajax.post(updateUrl, updateParams)
-									.then(res => { console.log('成功更新openid') });
-								_this.step++;
+								this.$ajax({
+									method: 'post',
+									url: updateUrl,
+									timeout: 10000,
+									params: {
+										'openid': _this.openid
+									}//this is important !
+								}).then((res) => {
+									console.log('成功更新openid')
+									Message.success({
+										message: '学籍信息验证成功！'
+									})
+									_this.step++;
+								})
 							} catch (e) {
 								alert(e)
 							}
@@ -144,17 +152,21 @@
 
 				_this.passError = false;
 				let url = resources.users(this.userId);
-				let params = new URLSearchParams();
-				params.append('studentNo', this.loginForm.studentNo);
-				params.append('password', md5(this.loginForm.password));
-				params.append('openid', this.openid);
+				this.$ajax({
+					method: 'post',
+					url: url,
+					timeout: 10000,
+					params: {
+						'studentNo': this.loginForm.studentNo,
+						'password': md5(this.loginForm.password),
+						'openid': this.openid
+					}//this is important !
+				}).then((res) => {
+					Message.success({
+						message: '成功更新密码！'
+					})
+				})
 
-				this.$ajax.post(url, params)
-					.then(res => {
-						Message.success({
-							message: '成功！'
-						})
-					});
 			},
 		},
 		mounted: function () {
