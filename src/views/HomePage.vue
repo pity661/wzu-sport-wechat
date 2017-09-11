@@ -66,8 +66,8 @@
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
 					universityId: 1,
-					studentNo: '',
-					name: '',
+					studentNo: '15210231110',
+					name: '林金鸿',
 					password: '',
 					rePassword: '',
 				},
@@ -101,23 +101,31 @@
 					studentNo: this.loginForm.studentNo,
 					name: this.loginForm.name
 				}
+				alert(JSON.stringify(params));
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${studentQuery}`,
 					variables: params
 				})
 				.then(res => {
+					
 					if (res.data.data.student) {
-						_this.userId = res.data.data.student.id;
+						alert(JSON.stringify(res.data.data));
+						_this.userId = res.data.data.student.userId;
 						// 调用一次user更新接口，更新userid
-						let updateUrl = resources.users(this.userId);
+						let updateUrl = resources.users(_this.userId);
 						let updateParams = new URLSearchParams();
 						updateParams.append('userId', _this.userId);
-						updateParams.append('openid', this.openid);
+						updateParams.append('openid', _this.openid);
+						alert(_this.userId);
+						console.log('userId:', _this.userId)
+						alert(_this.openid);
+						console.log('openid:', _this.openid)
 						_this.$ajax.post(updateUrl, updateParams)
-						.then(res => {console.log('更新openid')});
+						.then(res => {alert('成功更新openid')});
 
 						_this.step++;
 					} else {
+						alert('verifyError:', JSON.stringify(res));
 						_this.verifyError = true;
 					}
 
