@@ -66,8 +66,8 @@
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
 					universityId: 1,
-					studentNo: '15210231110',
-					name: '林金鸿',
+					studentNo: '',
+					name: '',
 					password: '',
 					rePassword: '',
 				},
