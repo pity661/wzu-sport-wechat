@@ -18,97 +18,98 @@
 </body>
 <script>
 	(function () {
-		var str = window.location.href;
-		// 设置全局变量，接口主机名和重定向函数
-		window.authUrl = '192.168.0.112:8080';
-		window.redirect = redirect;
+		if (location.hash !== '#/help') {
+			var str = window.location.href;
+			// 设置全局变量，接口主机名和重定向函数
+			window.authUrl = '192.168.0.112:8080';
+			window.redirect = redirect;
 
-		// 判断url有没有带openid，有的话存cookies并重新跳转，把参数去掉
-		console.debug('openid:' + getQueryString('openid'));
-		if (getQueryString('openid')) {
-			console.debug('has openid')
-			setCookie('openid', getQueryString('openid'), 2);
+			// 判断url有没有带openid，有的话存cookies并重新跳转，把参数去掉
+			console.debug('openid:' + getQueryString('openid'));
+			if (getQueryString('openid')) {
+				console.debug('has openid')
+				setCookie('openid', getQueryString('openid'), 2);
 
-			// window.location.replace(removeUrlParams(['openid']));
-			// window.location.hash = "home";
-		} else {
-			console.debug('has no openid')
-			// 查看cookies里查看一下是否有openid,有的话直接往下走，没有的话去后台获取
-			var openid = getCookie('openid');
-			if (openid && openid != "undefined") {
-				console.debug('has cookie', window.location.href, window.location.href.indexOf('?'));
-				if (window.location.href.indexOf('?') == -1) {
-					window.location.replace(window.location.href.split('#')[0] + '?#' + (window.location.href.split('#')[1] || ''));
-				}
-				window.location.hash = "home";
+				// window.location.replace(removeUrlParams(['openid']));
+				// window.location.hash = "home";
 			} else {
-				redirect();
-			}
-		}
-
-		// 去除url中的参数
-		function removeUrlParams(params) {
-			var url = window.location.href;
-			for (var i in params) {
-				var reg = new RegExp("(^|&)" + params[i] + "=([^&]*)(&|$)", "i");
-				var r = window.location.search.substr(1).match(reg);
-				if (r != null) url = url.replace(params[i] + '=' + r[2], '').replace('&&', '&');
-			}
-			return url.replace('?&', '?').replace('&#', '#');
-		}
-
-		// 跳转到后端授权接口
-		function redirect() {
-			var hash = location.hash;
-			var page = location.href;
-			if (hash !== '#/help') {
-				page = page.replace(hash, '#/home');
-			}
-
-			var redirectUri = "https://api.guangyangyundong.com/api/users/wechatAuth";
-			redirectUri = encodeURIComponent(redirectUri);
-			page = "?page=" + encodeURIComponent(page);
-			page = encodeURIComponent(page);
-			// var appId = "wx8e8661fdfc08da2d";//光氧运动账号
-			// var appId = "wx2c8f990778df47a3";//欧旭的账号
-			window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8e8661fdfc08da2d&redirect_uri='
-				+  redirectUri + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
-		}
-
-		// 设置cookies, hours为过期时间
-		function setCookie(name, value, hours) {
-			var expires = new Date((new Date()).getTime() + hours * 3600000);
-			document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires.toGMTString();
-		}
-
-		// 获取cookies
-		function getCookie(name) {
-			var arr = document.cookie.split('; ');
-			var i = 0;
-			for (i = 0; i < arr.length; i++) {
-				var arr2 = arr[i].split('=');
-				if (arr2[0] == name) {
-					var getC = decodeURIComponent(arr2[1]);
-					return getC;
+				console.debug('has no openid')
+				// 查看cookies里查看一下是否有openid,有的话直接往下走，没有的话去后台获取
+				var openid = getCookie('openid');
+				if (openid && openid != "undefined") {
+					console.debug('has cookie', window.location.href, window.location.href.indexOf('?'));
+					if (window.location.href.indexOf('?') == -1) {
+						window.location.replace(window.location.href.split('#')[0] + '?#' + (window.location.href.split('#')[1] || ''));
+					}
+					window.location.hash = "home";
+				} else {
+					redirect();
 				}
 			}
-			return '';
-		}
 
-		// 移除cookies
-		function removeCookie(name) {
-			var exp = new Date();
-			exp.setTime(exp.getTime() - 1);
-			var cval = getCookie(name);
-			if (cval != null) document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
-		}
+			// 去除url中的参数
+			function removeUrlParams(params) {
+				var url = window.location.href;
+				for (var i in params) {
+					var reg = new RegExp("(^|&)" + params[i] + "=([^&]*)(&|$)", "i");
+					var r = window.location.search.substr(1).match(reg);
+					if (r != null) url = url.replace(params[i] + '=' + r[2], '').replace('&&', '&');
+				}
+				return url.replace('?&', '?').replace('&#', '#');
+			}
 
-		// 获取url参数
-		function getQueryString(name) {
-			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-			var r = window.location.search.substr(1).match(reg);
-			if (r != null) return unescape(r[2]);
-			return null;
+			// 跳转到后端授权接口
+			function redirect() {
+				var hash = location.hash;
+				var page = location.href;
+					page = page.replace(hash, '#/home');
+				
+
+				var redirectUri = "https://api.guangyangyundong.com/api/users/wechatAuth";
+				redirectUri = encodeURIComponent(redirectUri);
+				page = "?page=" + encodeURIComponent(page);
+				page = encodeURIComponent(page);
+				// var appId = "wx8e8661fdfc08da2d";//光氧运动账号
+				// var appId = "wx2c8f990778df47a3";//欧旭的账号
+				window.location.href = 'http://open.weixin.qq.com/connect/oauth2/authorize?appid=wx8e8661fdfc08da2d&redirect_uri='
+					+  redirectUri + page + '&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect';
+			}
+
+			// 设置cookies, hours为过期时间
+			function setCookie(name, value, hours) {
+				var expires = new Date((new Date()).getTime() + hours * 3600000);
+				document.cookie = name + '=' + encodeURIComponent(value) + ';expires=' + expires.toGMTString();
+			}
+
+			// 获取cookies
+			function getCookie(name) {
+				var arr = document.cookie.split('; ');
+				var i = 0;
+				for (i = 0; i < arr.length; i++) {
+					var arr2 = arr[i].split('=');
+					if (arr2[0] == name) {
+						var getC = decodeURIComponent(arr2[1]);
+						return getC;
+					}
+				}
+				return '';
+			}
+
+			// 移除cookies
+			function removeCookie(name) {
+				var exp = new Date();
+				exp.setTime(exp.getTime() - 1);
+				var cval = getCookie(name);
+				if (cval != null) document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+			}
+
+			// 获取url参数
+			function getQueryString(name) {
+				var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+				var r = window.location.search.substr(1).match(reg);
+				if (r != null) return unescape(r[2]);
+				return null;
+			}
 		}
 	}());
 </script>
