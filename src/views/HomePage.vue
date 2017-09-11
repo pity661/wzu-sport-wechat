@@ -118,7 +118,7 @@
 									.then(res => { console.log('成功更新openid') });
 								_this.step++;
 							} catch (e) {
-								console.log(e)
+								alert(e)
 							}
 						} else {
 							_this.verifyError = true;
