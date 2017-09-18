@@ -164,7 +164,8 @@
 				}).then((res) => {
 					Message.success({
 						message: '成功更新密码！'
-					})
+					});
+					window.location.href = 'http://a.app.qq.com/o/simple.jsp?pkgname=com.guangyangyundong.sport';
 				})
 
 			},
