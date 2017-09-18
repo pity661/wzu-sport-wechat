@@ -88,6 +88,8 @@
                             <p>MIUI 8.0，解除省电限制：打开「设置」-「电量和性能」-「省电优化」，在「应用智能省电」中，将光氧运动App 设置成「无限制」和「允许定位」。</p>
                             <p><img src="static/xiaomi1.jpg" alt="" width="100%"></p>
                             <p><img src="static/xiaomi2.jpg" alt="" width="100%"></p>
+                            <p>还要打开「省电优化」-「设置」，将「锁屏断开数据」调为「从不」状态。</p>
+                            <p><img src="static/xiaomi7.png" alt="" width="100%"></p>
                             <p>MIUI 8.0，加入内存清理白名单：点击手机上的物理「菜单」按钮，将光氧运动App向下拉动至露出锁图案后松开，图标右上方出现橙色锁，即添加白名单成功。</p>
                             <p><img src="static/xiaomi3.jpg" alt="" width="100%"></p>
                             <p>MIUI 7.0：</p>
