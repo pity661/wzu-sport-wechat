@@ -13,7 +13,7 @@
 
 			<label>姓名</label>
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
-			<p v-if="verifyError" class="error-msg">该姓名与学号不符，请重新输入</p>
+			<p v-if="verifyError" class="error-msg">该学号不存在，请联系客服 </p>
 		</div>
 		<div v-if="step === 2" class="page-3">
 			<label>新密码</label>
@@ -105,7 +105,6 @@
 					variables: params
 				})
 					.then(res => {
-
 						if (res.data.data.student) {
 							try {
 								_this.userId = res.data.data.student.userId;
@@ -131,10 +130,7 @@
 						} else {
 							_this.verifyError = true;
 						}
-
-
 					});
-
 			},
 			submit() {
 				let _this = this;
