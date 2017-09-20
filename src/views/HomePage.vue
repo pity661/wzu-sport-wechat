@@ -22,7 +22,7 @@
 			<input min="6" max="16" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
 			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
-		<button @click="step == 1 ? next() : submit()">{{step == 1 ? '下一步' : '提交'}}</button>
+		<button @click="step == 1 ? next() : submit()" v-bind:disabled="isLoading">{{step == 1 ? '下一步' : '提交'}}</button>
 	</div>
 </template>
 
@@ -61,6 +61,7 @@
 			return {
 				step: 1,
 				openid: '',
+				isLoading: false,
 				universities: [],
 				loginForm: {
 					// 测试账号: 15210231110 name: 林金鸿
@@ -100,6 +101,8 @@
 					studentNo: this.loginForm.studentNo,
 					name: this.loginForm.name
 				}
+				_this.isLoading = true;
+				
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${studentQuery}`,
 					variables: params
@@ -123,6 +126,7 @@
 										message: '学籍信息验证成功！'
 									})
 									_this.step++;
+									_this.isLoading = false;
 								})
 							} catch (e) {
 								alert(e)
