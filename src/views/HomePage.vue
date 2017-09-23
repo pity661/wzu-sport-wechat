@@ -13,7 +13,7 @@
 
 			<label>姓名</label>
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
-			<p v-if="verifyError" class="error-msg">该学号不存在，请联系客服 </p>
+			<p v-if="verifyError" class="error-msg">该账号不存在，请联系客服 </p>
 		</div>
 		<div v-if="step === 2" class="page-3">
 			<label>新密码</label>
@@ -77,6 +77,16 @@
 				passErrorMsg: ''
 			}
 		},
+		watch: {
+			'loginForm': {
+				handler: function (val, oldval) {
+					this.isLoading = false;
+					this.verifyError = false;
+					this.passError = false;
+				},
+				deep: true //对象内部的属性监听，也叫深度监听  
+			}
+		},
 		methods: {
 			getUniversities() {
 				this.$ajax.post(`${resources.graphQlApi}`, {
@@ -98,11 +108,10 @@
 
 				let params = {
 					universityId: this.loginForm.universityId,
-					studentNo: this.loginForm.studentNo,
-					name: this.loginForm.name
+					studentNo: this.loginForm.studentNo.trim(),
+					name: this.loginForm.name.trim()
 				}
 				_this.isLoading = true;
-				
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${studentQuery}`,
 					variables: params
