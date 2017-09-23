@@ -13,13 +13,13 @@
 
 			<label>姓名</label>
 			<input size="large" type="text" v-model="loginForm.name" placeholder="请输入您的姓名">
-			<p v-if="verifyError" class="error-msg">该学号不存在，请联系客服 </p>
+			<p v-if="verifyError" class="error-msg">该账号不存在，请联系客服 </p>
 		</div>
 		<div v-if="step === 2" class="page-3">
 			<label>新密码</label>
-			<input min="6" max="16" size="large" type="password" v-model="loginForm.password" placeholder="请输入6-16位密码">
+			<input min="6" max="12" size="large" type="password" v-model="loginForm.password" placeholder="请输入6~12位，包含英文或者数字的密码">
 			<label>再次输入密码</label>
-			<input min="6" max="16" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6-16位密码">
+			<input min="6" max="12" size="large" type="password" v-model="loginForm.rePassword" placeholder="请输入6~12位，包含英文或者数字的密码">
 			<p v-if="passError" class="error-msg">{{passErrorMsg}}</p>
 		</div>
 		<button @click="step == 1 ? next() : submit()" v-bind:disabled="isLoading">{{step == 1 ? '下一步' : '提交'}}</button>
@@ -77,6 +77,16 @@
 				passErrorMsg: ''
 			}
 		},
+		watch: {
+			'loginForm': {
+				handler: function (val, oldval) {
+					this.isLoading = false;
+					this.verifyError = false;
+					this.passError = false;
+				},
+				deep: true //对象内部的属性监听，也叫深度监听  
+			}
+		},
 		methods: {
 			getUniversities() {
 				this.$ajax.post(`${resources.graphQlApi}`, {
@@ -98,11 +108,10 @@
 
 				let params = {
 					universityId: this.loginForm.universityId,
-					studentNo: this.loginForm.studentNo,
-					name: this.loginForm.name
+					studentNo: this.loginForm.studentNo.trim(),
+					name: this.loginForm.name.trim()
 				}
 				_this.isLoading = true;
-				
 				this.$ajax.post(`${resources.graphQlApi}`, {
 					'query': `${studentQuery}`,
 					variables: params
@@ -138,15 +147,16 @@
 			},
 			submit() {
 				let _this = this;
+				let reg = /^[0-9a-zA-Z]+$/;
 				if (this.loginForm.password !== this.loginForm.rePassword) {
 					_this.passError = true;
 					_this.passErrorMsg = '两次密码输入不一致，请重新输入';
 					return
 				}
 
-				if (this.loginForm.password.length < 6 || this.loginForm.password.length > 16) {
+				if (this.loginForm.password.length < 6 || this.loginForm.password.length > 12 || !reg.test(this.loginForm.password)) {
 					_this.passError = true;
-					_this.passErrorMsg = '密码格式不正确，请重新输入';
+					_this.passErrorMsg = '请输入6~12位，包含英文或者数字的密码';
 					return;
 				}
 
