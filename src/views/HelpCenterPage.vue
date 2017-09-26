@@ -32,6 +32,11 @@
             </el-collapse-item>
 
             <p class="title"><i class="icon-title"></i>关于运动</p>
+            <el-collapse-item title="有哪些手机内置记步传感器" name="21">
+                <div class="content">
+                    <p><img src="static/models.png" alt="" width="100%"></p>
+                </div>
+            </el-collapse-item>
             <el-collapse-item title="跑前准备" name="20">
                 <div class="content">
                     <p>1. 请保持设备网络畅通，保证手机设备的蜂窝移动网络处于打开状态，或者设备已经连上WiFi网络并且通信正常。否则在运动过程中，运动数据无法成功提交，影响运动达标。</p>
